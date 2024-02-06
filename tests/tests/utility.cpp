@@ -8,6 +8,7 @@
 #include <catch2/catch_all.hpp>
 
 #include <concepts>
+#include <functional>
 #include <type_traits>
 
 namespace fn {

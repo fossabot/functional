@@ -9,6 +9,7 @@
 #include "functional/detail/fwd_macro.hpp"
 #include "functional/detail/pack.hpp"
 #include "functional/detail/traits.hpp"
+#include <type_traits>
 
 #include <type_traits>
 #include <utility>
