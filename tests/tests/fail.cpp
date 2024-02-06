@@ -7,8 +7,6 @@
 
 #include <catch2/catch_all.hpp>
 
-#include <expected>
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -35,7 +33,7 @@ TEST_CASE("fail", "[fail][expected][expected_value]")
 {
   using namespace fn;
 
-  using operand_t = std::expected<int, Error>;
+  using operand_t = fn::expected<int, Error>;
   constexpr auto fnValue = [](int i) -> Error { return {"Got " + std::to_string(i)}; };
 
   static_assert(monadic_invocable<fail_t, operand_t, decltype(fnValue)>);
@@ -115,7 +113,7 @@ TEST_CASE("fail", "[fail][expected][expected_value]")
     }
     WHEN("calling member function")
     {
-      using operand_t = std::expected<Value, Error>;
+      using operand_t = fn::expected<Value, Error>;
       operand_t a{std::in_place, 12};
       using T = decltype(a | fail(&Value::fn));
       static_assert(std::is_same_v<T, operand_t>);
@@ -143,7 +141,7 @@ TEST_CASE("fail", "[fail][expected][expected_value]")
     }
     WHEN("calling member function")
     {
-      using operand_t = std::expected<Value, Error>;
+      using operand_t = fn::expected<Value, Error>;
       using T = decltype(operand_t{std::in_place, 12} | fail(&Value::fn));
       static_assert(std::is_same_v<T, operand_t>);
       REQUIRE((operand_t{std::in_place, 12} | fail(&Value::fn)).error().what == "Was 12");
@@ -155,7 +153,7 @@ TEST_CASE("fail", "[fail][expected][expected_void]")
 {
   using namespace fn;
 
-  using operand_t = std::expected<void, Error>;
+  using operand_t = fn::expected<void, Error>;
   int count = 0;
   auto fnValue = [&count]() -> Error { return {"Got " + std::to_string(++count)}; };
 
@@ -232,7 +230,7 @@ TEST_CASE("fail", "[fail][optional]")
 {
   using namespace fn;
 
-  using operand_t = std::optional<int>;
+  using operand_t = fn::optional<int>;
   auto count = 0;
   auto fnValue = [&count](auto) { count += 1; };
 
@@ -297,7 +295,7 @@ TEST_CASE("fail", "[fail][optional]")
     }
     WHEN("calling member function")
     {
-      using operand_t = std::optional<Value>;
+      using operand_t = fn::optional<Value>;
       operand_t a{std::in_place, 12};
       using T = decltype(a | fail(&Value::finalize));
       static_assert(std::is_same_v<T, operand_t>);
@@ -327,7 +325,7 @@ TEST_CASE("fail", "[fail][optional]")
     }
     WHEN("calling member function")
     {
-      using operand_t = std::optional<Value>;
+      using operand_t = fn::optional<Value>;
       using T = decltype(operand_t{std::in_place, 12} | fail(&Value::finalize));
       static_assert(std::is_same_v<T, operand_t>);
       auto const before = Value::count;
@@ -340,7 +338,7 @@ TEST_CASE("fail", "[fail][optional]")
 TEST_CASE("constexpr fail expected", "[fail][constexpr][expected]")
 {
   enum class Error { ThresholdExceeded, SomethingElse };
-  using T = std::expected<int, Error>;
+  using T = fn::expected<int, Error>;
   constexpr auto fn = [](int i) constexpr noexcept -> Error {
     if (i < 3)
       return Error::SomethingElse;
@@ -356,7 +354,7 @@ TEST_CASE("constexpr fail expected", "[fail][constexpr][expected]")
 
 TEST_CASE("constexpr fail optional", "[fail][constexpr][optional]")
 {
-  using T = std::optional<int>;
+  using T = fn::optional<int>;
   constexpr auto fn = [](int) constexpr noexcept -> void {};
   constexpr auto r1 = T{0} | fn::fail(fn);
   static_assert(not r1.has_value());
@@ -380,23 +378,23 @@ template <typename E> constexpr auto fn_int_rvalue = [](int &&) -> E { throw 0; 
 } // namespace
 
 // clang-format off
-static_assert(invocable_fail<decltype(fn_int<Error>), std::expected<int, Error>>);
-static_assert(invocable_fail<decltype(fn_generic<Error>), std::expected<void, Error>>);
-static_assert(invocable_fail<decltype(fn_int<Xerror>), std::expected<int, Error>>); // return type conversion
-static_assert(not invocable_fail<decltype(fn_int<Error>), std::expected<int, Xerror>>); // cannot convert error
-static_assert(not invocable_fail<decltype(fn_generic<Error>), std::expected<void, Xerror>>); // cannot convert error
-static_assert(not invocable_fail<decltype(fn_generic<Error>), std::expected<Value, Xerror>>); // cannot convert error
-static_assert(not invocable_fail<decltype(fn_int<Error>), std::expected<Value, Error>>); // wrong parameter type
-static_assert(invocable_fail<decltype(fn_generic<Error>), std::expected<Value, Error>>);
+static_assert(invocable_fail<decltype(fn_int<Error>), fn::expected<int, Error>>);
+static_assert(invocable_fail<decltype(fn_generic<Error>), fn::expected<void, Error>>);
+static_assert(invocable_fail<decltype(fn_int<Xerror>), fn::expected<int, Error>>); // return type conversion
+static_assert(not invocable_fail<decltype(fn_int<Error>), fn::expected<int, Xerror>>); // cannot convert error
+static_assert(not invocable_fail<decltype(fn_generic<Error>), fn::expected<void, Xerror>>); // cannot convert error
+static_assert(not invocable_fail<decltype(fn_generic<Error>), fn::expected<Value, Xerror>>); // cannot convert error
+static_assert(not invocable_fail<decltype(fn_int<Error>), fn::expected<Value, Error>>); // wrong parameter type
+static_assert(invocable_fail<decltype(fn_generic<Error>), fn::expected<Value, Error>>);
 
-static_assert(invocable_fail<decltype(fn_int<void>), std::optional<int>>);
-static_assert(not invocable_fail<decltype(fn_int<void>), std::optional<Value>>); // wrong parameter type
-static_assert(invocable_fail<decltype(fn_generic<void>), std::optional<Value>>);
-static_assert(not invocable_fail<decltype(fn_generic<Error>), std::optional<Value>>); // bad return type
+static_assert(invocable_fail<decltype(fn_int<void>), fn::optional<int>>);
+static_assert(not invocable_fail<decltype(fn_int<void>), fn::optional<Value>>); // wrong parameter type
+static_assert(invocable_fail<decltype(fn_generic<void>), fn::optional<Value>>);
+static_assert(not invocable_fail<decltype(fn_generic<Error>), fn::optional<Value>>); // bad return type
 
-static_assert(not invocable_fail<decltype(fn_int_lvalue<Error>), std::expected<int, Error>>); // cannot bind temporary to lvalue
-static_assert(invocable_fail<decltype(fn_int_lvalue<Error>), std::expected<int, Error>&>);
-static_assert(invocable_fail<decltype(fn_int_rvalue<Error>), std::expected<int, Error>>);
-static_assert(not invocable_fail<decltype(fn_int_rvalue<Error>), std::expected<int, Error>&>); // cannot bind lvalue to rvalue-ref
+static_assert(not invocable_fail<decltype(fn_int_lvalue<Error>), fn::expected<int, Error>>); // cannot bind temporary to lvalue
+static_assert(invocable_fail<decltype(fn_int_lvalue<Error>), fn::expected<int, Error>&>);
+static_assert(invocable_fail<decltype(fn_int_rvalue<Error>), fn::expected<int, Error>>);
+static_assert(not invocable_fail<decltype(fn_int_rvalue<Error>), fn::expected<int, Error>&>); // cannot bind lvalue to rvalue-ref
 // clang-format on
 } // namespace fn

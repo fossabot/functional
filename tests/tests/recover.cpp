@@ -8,8 +8,6 @@
 
 #include <catch2/catch_all.hpp>
 
-#include <expected>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -26,7 +24,7 @@ TEST_CASE("recover", "[recover][expected][expected_value]")
 {
   using namespace fn;
 
-  using operand_t = std::expected<int, Error>;
+  using operand_t = fn::expected<int, Error>;
   constexpr auto fnError = [](Error e) -> int { return e.what.size(); };
 
   static_assert(monadic_invocable<recover_t, operand_t, decltype(fnError)>);
@@ -112,7 +110,7 @@ TEST_CASE("recover", "[recover][expected][expected_void]")
 {
   using namespace fn;
 
-  using operand_t = std::expected<void, Error>;
+  using operand_t = fn::expected<void, Error>;
   int count = 0;
   auto fnError = [&count](Error) -> void { count += 1; };
 
@@ -197,7 +195,7 @@ TEST_CASE("recover", "[recover][optional]")
 {
   using namespace fn;
 
-  using operand_t = std::optional<int>;
+  using operand_t = fn::optional<int>;
   constexpr auto fnError = []() -> int { return 42; };
 
   static_assert(monadic_invocable<recover_t, operand_t, decltype(fnError)>);
@@ -254,7 +252,7 @@ TEST_CASE("recover", "[recover][optional]")
 TEST_CASE("constexpr recover expected", "[recover][constexpr][expected]")
 {
   enum class Error { ThresholdExceeded, SomethingElse };
-  using T = std::expected<int, Error>;
+  using T = fn::expected<int, Error>;
 
   constexpr auto fn = [](Error e) constexpr noexcept -> int {
     if (e == Error::SomethingElse)
@@ -273,7 +271,7 @@ TEST_CASE("constexpr recover expected", "[recover][constexpr][expected]")
 
 TEST_CASE("constexpr recover optional", "[recover][constexpr][optional]")
 {
-  using T = std::optional<int>;
+  using T = fn::optional<int>;
   constexpr auto fn = []() constexpr noexcept -> int { return 13; };
   constexpr auto r1 = T{0} | fn::recover(fn);
   static_assert(r1.value() == 0);

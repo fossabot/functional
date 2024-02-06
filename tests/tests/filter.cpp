@@ -8,8 +8,6 @@
 
 #include <catch2/catch_all.hpp>
 
-#include <expected>
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,7 +25,7 @@ TEST_CASE("filter", "[filter][expected][expected_value]")
 {
   using namespace fn;
 
-  using operand_t = std::expected<int, Error>;
+  using operand_t = fn::expected<int, Error>;
   constexpr auto truePred = [](int) { return true; };
   constexpr auto falsePred = [](int) { return false; };
   constexpr auto onError = [](int v) { return Error{"Got " + std::to_string(v)}; };
@@ -161,7 +159,7 @@ TEST_CASE("filter member function", "[filter][expected][expected_value][member_f
 {
   using namespace fn;
 
-  using operand_t = std::expected<Value, Error>;
+  using operand_t = fn::expected<Value, Error>;
   constexpr auto predicate = &Value::ok;
   constexpr auto onError = &Value::error;
 
@@ -286,7 +284,7 @@ TEST_CASE("filter", "[filter][expected][expected_void]")
 {
   using namespace fn;
 
-  using operand_t = std::expected<void, Error>;
+  using operand_t = fn::expected<void, Error>;
   auto truePred = [] { return true; };
   auto falsePred = [] { return false; };
   auto onError = [] { return Error{"Got error"}; };
@@ -384,7 +382,7 @@ TEST_CASE("filter", "[filter][optional]")
 {
   using namespace fn;
 
-  using operand_t = std::optional<int>;
+  using operand_t = fn::optional<int>;
   auto truePred = [](int) { return true; };
   auto falsePred = [](int) { return false; };
 
@@ -465,7 +463,7 @@ TEST_CASE("filter member function", "[filter][optional]")
 {
   using namespace fn;
 
-  using operand_t = std::optional<Value>;
+  using operand_t = fn::optional<Value>;
   constexpr auto predicate = &Value::ok;
 
   using check = static_check::bind_left<filter_t>;
@@ -545,7 +543,7 @@ TEST_CASE("filter member function", "[filter][optional]")
 TEST_CASE("constexpr filter expected", "[filter][constexpr][expected]")
 {
   enum class Error { ThresholdExceeded, SomethingElse };
-  using T = std::expected<int, Error>;
+  using T = fn::expected<int, Error>;
 
   constexpr auto fn = [](int i) constexpr noexcept -> bool { return i < 3; };
   constexpr auto error = [](int) -> Error { return Error::ThresholdExceeded; };
@@ -559,7 +557,7 @@ TEST_CASE("constexpr filter expected", "[filter][constexpr][expected]")
 
 TEST_CASE("constexpr filter optional", "[filter][constexpr][optional]")
 {
-  using T = std::optional<int>;
+  using T = fn::optional<int>;
 
   constexpr auto fn = [](int i) constexpr noexcept -> bool { return i < 3; };
   constexpr auto r1 = T{0} | fn::filter(fn);
