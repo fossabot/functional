@@ -8,6 +8,7 @@
 
 #include "functional/expected.hpp"
 #include "functional/optional.hpp"
+#include "functional/utility.hpp"
 
 #include <concepts>
 #include <functional>
