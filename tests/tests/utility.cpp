@@ -148,6 +148,54 @@ TEST_CASE("pack", "[pack]")
   static_assert(pack<>{}.size() == 0);
 }
 
+TEST_CASE("append value categories", "[pack][append]")
+{
+  static_assert(fn::pack<>{}.size() == 0);
+  static_assert(std::same_as<decltype(fn::pack<>{}), fn::pack<>>);
+  static_assert(fn::pack<>{}.append(1).size() == 1);
+  static_assert(std::same_as<typename fn::pack<>::template append_type<int>, fn::pack<int>>);
+  static_assert(std::same_as<typename fn::pack<>::template append_type<char const *>, fn::pack<char const *>>);
+  static_assert(std::same_as<decltype(fn::pack<>{}.template append<char const *>("foo")), fn::pack<char const *>>);
+  static_assert(std::same_as<fn::pack<>::template append_type<char const(&)[4]>, fn::pack<char const(&)[4]>>);
+  static_assert(std::same_as<decltype(fn::pack<>{}.append("foo")), fn::pack<char const(&)[4]>>);
+
+  constexpr auto a1 = fn::pack<>{}.append(2).append(3);
+  static_assert(a1.size() == 2);
+  static_assert(std::same_as<decltype(a1), fn::pack<int, int> const>);
+  static_assert(a1.invoke([](int a, int b, int c) constexpr -> int { return a * b * c; }, 5) == 2 * 3 * 5);
+  static_assert(a1.invoke([](int a, int b) constexpr -> bool { return a == 2 && b == 3; }));
+  static_assert(a1.invoke([](int a, int b, int c) constexpr -> bool { return a == -1 && b == 2 && c == 3; }, -1));
+
+  static_assert(std::same_as<typename decltype(a1)::template append_type<unsigned>, fn::pack<int, int, unsigned>>);
+  constexpr auto a2 = a1.append(7u);
+  static_assert(a2.size() == 3);
+  static_assert(std::same_as<decltype(a2), fn::pack<int, int, unsigned int> const>);
+  static_assert(a2.invoke([](int a, int b, int c) constexpr noexcept -> int { return a * b * c; }) == 2 * 3 * 7);
+
+  fn::pack<int> b{0};
+  bool f = false;
+  bool const cf = false;
+  static_assert(std::same_as<decltype(b), fn::pack<int>>);
+  static_assert(std::same_as<decltype(b.append(false)), fn::pack<int, bool>>);
+  static_assert(std::same_as<decltype(b.append(f)), fn::pack<int, bool &>>);
+  static_assert(std::same_as<decltype(b.append(std::as_const(f))), fn::pack<int, bool const &>>);
+  static_assert(std::same_as<decltype(b.append(cf)), fn::pack<int, bool const &>>);
+  static_assert(std::same_as<decltype(b.append(std::move(f))), fn::pack<int, bool>>);
+  static_assert(std::same_as<decltype(b.append(std::move(cf))), fn::pack<int, bool const>>);
+  static_assert(std::same_as<decltype(b.append(fn::type<int>(), f)), fn::pack<int, int>>);
+
+  static_assert(std::same_as<decltype(b.append(fn::type<bool const>(), false)), fn::pack<int, bool const>>);
+  static_assert(std::same_as<decltype(b.append(fn::type<bool>(), false)), fn::pack<int, bool>>);
+  static_assert(std::same_as<decltype(b.append(fn::type<int>(), false)), fn::pack<int, int>>);
+  static_assert(std::same_as<decltype(b.append(fn::type<bool>(), 0)), fn::pack<int, bool>>);
+
+  static_assert(std::same_as<decltype(b.append(fn::type<std::reference_wrapper<bool>>(), f)),
+                             fn::pack<int, std::reference_wrapper<bool>>>);
+  static_assert(std::same_as<decltype(b.append(fn::type<std::reference_wrapper<bool const>>(), f)),
+                             fn::pack<int, std::reference_wrapper<bool const>>>);
+  static_assert(std::same_as<decltype(b.append(fn::type<bool const &>(), f)), fn::pack<int, bool const &>>);
+}
+
 TEST_CASE("pack with immovable data", "[pack][immovable]")
 {
   using fn::pack;
