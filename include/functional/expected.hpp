@@ -147,16 +147,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn), this->value());
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn), this->value())};
+      else
         return new_type(std::unexpect, this->error());
     }
   }
@@ -177,16 +170,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn), this->value());
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn), this->value())};
+      else
         return new_type(std::unexpect, this->error());
     }
   }
@@ -207,16 +193,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn), std::move(*this).value());
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn), std::move(*this).value())};
+      else
         return new_type(std::unexpect, std::move(*this).error());
     }
   }
@@ -237,16 +216,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn), std::move(*this).value());
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn), std::move(*this).value())};
+      else
         return new_type(std::unexpect, std::move(*this).error());
     }
   }
@@ -268,16 +240,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn));
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn))};
+      else
         return new_type(std::unexpect, this->error());
     }
   }
@@ -298,16 +263,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn));
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn))};
+      else
         return new_type(std::unexpect, this->error());
     }
   }
@@ -328,16 +286,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn));
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn))};
+      else
         return new_type(std::unexpect, std::move(*this).error());
     }
   }
@@ -358,16 +309,9 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_error_type = ::fn::detail::_collapsing_sum::normalized<
           ::fn::sum, ::fn::detail::_collapsing_sum::flattened<error_type, typename type::error_type>>::type;
       using new_type = ::fn::expected<typename type::value_type, new_error_type>;
-      if (this->has_value()) {
-        auto t = ::fn::detail::_invoke(FWD(fn));
-        if (t.has_value())
-          if constexpr (not std::is_same_v<typename new_type::value_type, void>)
-            return new_type{std::in_place, std::move(t).value()};
-          else
-            return new_type{std::in_place};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      } else
+      if (this->has_value())
+        return new_type{::fn::detail::_invoke(FWD(fn))};
+      else
         return new_type(std::unexpect, std::move(*this).error());
     }
   }
@@ -395,13 +339,8 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_type = ::fn::expected<new_value_type, typename type::error_type>;
       if (this->has_value())
         return new_type{std::in_place, this->value()};
-      else {
-        auto t = ::fn::detail::_invoke(FWD(fn), this->error());
-        if (t.has_value())
-          return new_type{std::in_place, std::move(t).value()};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      }
+      else
+        return new_type{::fn::detail::_invoke(FWD(fn), this->error())};
     }
   }
 
@@ -427,13 +366,8 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_type = ::fn::expected<new_value_type, typename type::error_type>;
       if (this->has_value())
         return new_type{std::in_place, this->value()};
-      else {
-        auto t = ::fn::detail::_invoke(FWD(fn), this->error());
-        if (t.has_value())
-          return new_type{std::in_place, std::move(t).value()};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      }
+      else
+        return new_type{::fn::detail::_invoke(FWD(fn), this->error())};
     }
   }
 
@@ -459,13 +393,8 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_type = ::fn::expected<new_value_type, typename type::error_type>;
       if (this->has_value())
         return new_type{std::in_place, std::move(*this).value()};
-      else {
-        auto t = ::fn::detail::_invoke(FWD(fn), std::move(*this).error());
-        if (t.has_value())
-          return new_type{std::in_place, std::move(t).value()};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      }
+      else
+        return new_type{::fn::detail::_invoke(FWD(fn), std::move(*this).error())};
     }
   }
 
@@ -491,13 +420,8 @@ template <typename T, typename Err> struct expected final : std::expected<T, Err
       using new_type = ::fn::expected<new_value_type, typename type::error_type>;
       if (this->has_value())
         return new_type{std::in_place, std::move(*this).value()};
-      else {
-        auto t = ::fn::detail::_invoke(FWD(fn), std::move(*this).error());
-        if (t.has_value())
-          return new_type{std::in_place, std::move(t).value()};
-        else
-          return new_type{std::unexpect, std::move(t).error()};
-      }
+      else
+        return new_type{::fn::detail::_invoke(FWD(fn), std::move(*this).error())};
     }
   }
 
